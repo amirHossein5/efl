@@ -30,7 +30,7 @@ func cameraWebsocketHandler(ws *websocket.Conn) {
 			if err == io.EOF {
 				break
 			}
-			log.Println("failed to read websocket data")
+			log.Println("failed to read websocket data", err)
 			continue
 		}
 
