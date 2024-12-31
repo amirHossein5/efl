@@ -16,10 +16,7 @@ func main() {
 	http.Handle("/camera-websocket", websocket.Handler(cameraWebsocketHandler))
 
 	log.Println("starting webserver at :8000")
-	err := http.ListenAndServe(":8000", nil)
-	if err != nil {
-		log.Fatal("failed to start server", err)
-	}
+	log.Fatal(http.ListenAndServe(":8000", nil))
 }
 
 func cameraWebsocketHandler(ws *websocket.Conn) {
