@@ -177,7 +177,7 @@ void loop() {
       Serial.println(websocket_server);
     }
 
-    delay(3000);
+    delay(1000);
     return;
   }
 
@@ -189,11 +189,11 @@ void loop() {
     return;
   }
 
-  delay(200);
   client.sendBinary((const char *) fb->buf, fb->len);
   esp_camera_fb_return(fb);
 
   client.poll();
+  delay(1000);
 }
 
 void onMessageCallback(WebsocketsMessage message) {
