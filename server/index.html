@@ -28,13 +28,5 @@
 
 <body>
     <img src="/stream" alt="" id="stream-image">
-
-    <script>
-        window.addEventListener("DOMContentLoaded", function() {
-            setInterval(function() {
-                document.querySelector('#stream-image').src = "/stream?" + Math.random().toString(16).slice(2);
-            }, 200);
-        });
-    </script>
 </body>
 </html>

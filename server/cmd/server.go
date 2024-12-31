@@ -56,5 +56,30 @@ func indexPage(w http.ResponseWriter, r *http.Request) {
 }
 
 func streamHandler(w http.ResponseWriter, r *http.Request) {
-	http.ServeFile(w, r, "image.jpeg")
+	w.Header().Add("Content-Type", "multipart/x-mixed-replace; boundary=frame")
+	boundary := "\r\n--frame\r\nContent-Type: image/jpeg\r\n\r\n"
+
+	for {
+		n, err := io.WriteString(w, boundary)
+		if err != nil || n != len(boundary) {
+			return
+		}
+
+		f, err := os.Open("image.jpeg")
+		if err != nil {
+			return
+		}
+
+		_, err = f.WriteTo(w)
+		if err != nil {
+			return
+		}
+
+		n, err = io.WriteString(w, "\r\n")
+		if err != nil || n != 2 {
+			return
+		}
+
+		time.Sleep(500 * time.Millisecond)
+	}
 }
