@@ -1,2 +1,2 @@
-#include WIFI_SSID "****"
-#include WIFI_PASSWORD "***"
+#define WIFI_SSID "****"
+#define WIFI_PASSWORD "***"
