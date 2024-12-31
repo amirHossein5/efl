@@ -1,10 +1,8 @@
 package main
 
 import (
-	"fmt"
 	"io"
 	"log"
-	"math/rand"
 	"net/http"
 	"os"
 	"time"
@@ -13,21 +11,21 @@ import (
 )
 
 func main() {
+	http.HandleFunc("/", indexPage)
+	http.HandleFunc("/stream", streamHandler)
 	http.Handle("/camera-websocket", websocket.Handler(cameraWebsocketHandler))
 
-	fmt.Println("starting webserver at :8000")
+	log.Println("starting webserver at :8000")
 	err := http.ListenAndServe(":8000", nil)
 	if err != nil {
 		log.Fatal("failed to start server", err)
 	}
 }
 
-var imageCounter = 0
-
 func cameraWebsocketHandler(ws *websocket.Conn) {
 	for {
-		buf := make([]byte, ws.Len())
-		n, err := ws.Read(buf)
+		var buf string
+		err := websocket.Message.Receive(ws, &buf)
 		if err != nil {
 			if err == io.EOF {
 				break
@@ -36,34 +34,27 @@ func cameraWebsocketHandler(ws *websocket.Conn) {
 			continue
 		}
 
-		f, err := os.Create(fmt.Sprint(imageCounter, ".jpeg"))
+		f, err := os.Create("image.jpeg")
 		if err != nil {
 			log.Println("couldn't create file", err)
 			continue
 		}
 		defer f.Close()
 
-		_, err = f.Write(buf[:n])
+		_, err = f.Write([]byte(buf))
 		if err != nil {
 			log.Println("image write failed", err)
 			continue
 		}
 
-		imageCounter++
-		time.Sleep(time.Second)
+		time.Sleep(100 * time.Millisecond)
 	}
 }
 
-func getFileName() string {
-	return time.Now().Format(time.RFC850) + randomString(10) + "-image.jpeg"
+func indexPage(w http.ResponseWriter, r *http.Request) {
+	http.ServeFile(w, r, "index.html")
 }
 
-func randomString(n int) string {
-	b := make([]rune, n)
-	for i := range b {
-		b[i] = letterRunes[rand.Intn(len(letterRunes))]
-	}
-	return string(b)
+func streamHandler(w http.ResponseWriter, r *http.Request) {
+	http.ServeFile(w, r, "image.jpeg")
 }
-
-var letterRunes = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
