@@ -140,6 +140,15 @@ void setup() {
   setupLedFlash(LED_GPIO_NUM);
 #endif
 
+  s->set_vflip(s, 1);
+  s->set_hmirror(s, 1);
+  s->set_framesize(s, FRAMESIZE_VGA);
+  s->set_gainceiling(s, GAINCEILING_8X);
+  s->set_gain_ctrl(s, 1);
+  s->set_exposure_ctrl(s, 1);
+  s->set_awb_gain(s, 1);
+  s->set_brightness(s, 1);
+
   WiFi.begin(ssid, password);
   WiFi.setSleep(false);
 
