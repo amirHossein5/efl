@@ -5,7 +5,31 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
 </head>
-<body>
 
+<style>
+    body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: black;
+        min-height: 100vh;
+    }
+
+    #stream-image {
+        width: auto;
+        height: auto;
+    }
+</style>
+
+<body>
+    <img src="/stream" alt="" id="stream-image">
+
+    <script>
+        window.addEventListener("DOMContentLoaded", function() {
+            setInterval(function() {
+                document.querySelector('#stream-image').src = "/stream?" + Math.random().toString(16).slice(2);
+            }, 200);
+        });
+    </script>
 </body>
 </html>
