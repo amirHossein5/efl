@@ -113,16 +113,18 @@ func cameraWebsocketHandler(w http.ResponseWriter, r *http.Request) {
 		var user models.User
 		dbconnection.Conn.Find(&user, userId)
 
-		can, err := user.CanLogAttendance()
+		can, latestAttendanceLog, err := user.CanLogAttendance()
 		if err != nil {
 			log.Println("failed to CanLogAttendance:", err)
 			continue
 		}
 		if !can {
-			err = c.WriteMessage(mt, []byte(PLAY_SOUND_WARNING))
-			if err != nil {
-				log.Println("send failed ", err)
-				continue
+			if time.Now().Add(-5 * time.Second).After(latestAttendanceLog.CreatedAt) {
+				err = c.WriteMessage(mt, []byte(PLAY_SOUND_WARNING))
+				if err != nil {
+					log.Println("send failed ", err)
+					continue
+				}
 			}
 			continue
 		}

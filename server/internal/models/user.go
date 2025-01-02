@@ -16,7 +16,7 @@ type User struct {
 }
 
 func (user *User) LogAttendance() error {
-	can, err := user.CanLogAttendance()
+	can, _, err := user.CanLogAttendance()
 	if can && err == nil {
 		attendanceLog := AttendanceLog{UserID: uint64(user.ID)}
 		err := dbconnection.Conn.Create(&attendanceLog).Error
@@ -29,16 +29,16 @@ func (user *User) LogAttendance() error {
 	return fmt.Errorf("CanLogAttendance returned false")
 }
 
-func (user *User) CanLogAttendance() (bool, error) {
+func (user *User) CanLogAttendance() (bool, *AttendanceLog, error) {
 	var attendanceLog AttendanceLog
 	err := dbconnection.Conn.Where("user_id = ?", user.ID).Last(&attendanceLog).Error
 
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return true, nil
+			return true, nil, nil
 		}
-		return false, err
+		return false, nil, err
 	}
 
-	return time.Now().Add(-15 * time.Second).After(attendanceLog.CreatedAt), nil
+	return time.Now().Add(-15 * time.Second).After(attendanceLog.CreatedAt), &attendanceLog, nil
 }
