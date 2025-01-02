@@ -177,7 +177,7 @@ void loop() {
       Serial.println(websocket_server);
     }
 
-    delay(1000);
+    delay(3000);
     return;
   }
 
