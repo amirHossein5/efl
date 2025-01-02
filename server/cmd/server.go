@@ -28,7 +28,9 @@ var upgrader = websocket.Upgrader{
 }
 
 func main() {
-	db, err := dbconnection.Open(sqlite.Open("database.db"), &gorm.Config{})
+	db, err := dbconnection.Open(sqlite.Open("database.db"), &gorm.Config{
+		Logger: logger.Default.LogMode(logger.Silent),
+	})
 	if err != nil {
 		panic("failed to connect database")
 	}
