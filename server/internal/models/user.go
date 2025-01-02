@@ -3,7 +3,6 @@ package models
 import (
 	"errors"
 	"fmt"
-	"log"
 	"time"
 
 	"github.com/amirhossein5/efl/server/internal/dbconnection"
@@ -35,7 +34,6 @@ func (user *User) CanLogAttendance() (bool, error) {
 	err := dbconnection.Conn.Where("user_id = ?", user.ID).Last(&attendanceLog).Error
 
 	if err != nil {
-		log.Println(errors.Is(err, gorm.ErrRecordNotFound))
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return true, nil
 		}
