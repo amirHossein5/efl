@@ -14,6 +14,7 @@ import (
 	"github.com/gorilla/websocket"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
 const PLAY_SOUND_WARNING = "play-sound:warning"
@@ -47,6 +48,12 @@ func main() {
 	if err != nil {
 		log.Fatal(err, " in attendance_logs table")
 	}
+
+	rec, err := recognizer.Initialize()
+	if err != nil {
+		log.Fatalf("failed to initialize recognizer: %v", err)
+	}
+	defer rec.Close()
 
 	http.HandleFunc("/", indexPage)
 	http.HandleFunc("/stream", streamHandler)
@@ -91,7 +98,7 @@ func cameraWebsocketHandler(w http.ResponseWriter, r *http.Request) {
 			log.Println(err)
 			continue
 		}
-		if userId < 0 {
+		if userId <= 0 {
 			log.Println("Can't classify")
 			err = c.WriteMessage(mt, []byte(PLAY_SOUND_WARNING))
 			if err != nil {
