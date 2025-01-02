@@ -73,7 +73,8 @@ func cameraWebsocketHandler(w http.ResponseWriter, r *http.Request) {
 				break
 			}
 			log.Println("failed to read websocket data", err)
-			continue
+			c.Close()
+			break
 		}
 		if mt != 2 {
 			continue
