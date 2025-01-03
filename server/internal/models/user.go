@@ -11,6 +11,7 @@ import (
 
 type User struct {
 	gorm.Model
+	Name           string
 	AttendanceLogs []AttendanceLog `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
 	EnrolledFaces  []EnrolledFace  `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
 }

@@ -2,7 +2,6 @@ package models
 
 import (
 	"fmt"
-	"log"
 	"time"
 
 	"gorm.io/gorm"
@@ -15,8 +14,9 @@ const (
 
 type AttendanceLog struct {
 	gorm.Model
-	UserID uint64
 	Type   string
+	UserID uint64
+	User   User
 }
 
 func (attendanceLog *AttendanceLog) BeforeCreate(tx *gorm.DB) error {

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"html/template"
 	"io"
 	"log"
 	"net/http"
@@ -144,7 +145,31 @@ func cameraWebsocketHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func indexPage(w http.ResponseWriter, r *http.Request) {
-	http.ServeFile(w, r, "index.html")
+	const tmplFile = "views/index.html"
+	tmpl, err := template.ParseFiles(tmplFile)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte("server error"))
+		log.Printf("failed to parse file %v, %v\n", tmplFile, err)
+		return
+	}
+
+	var attendanceLogs []models.AttendanceLog
+	err = dbconnection.Conn.Where("DATE(created_at) = ?", time.Now().Format("2006-01-02")).Order("created_at DESC").Preload("User").Find(&attendanceLogs).Error
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte("server error"))
+		log.Printf("failed to fetch attendanceLogs %v\n", err)
+		return
+	}
+
+	err = tmpl.Execute(w, attendanceLogs)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte("server error"))
+		log.Printf("failed to execute file %v, %v\n", tmplFile, err)
+		return
+	}
 }
 
 func streamHandler(w http.ResponseWriter, r *http.Request) {
