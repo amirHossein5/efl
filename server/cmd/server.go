@@ -18,9 +18,6 @@ import (
 	"gorm.io/gorm/logger"
 )
 
-const PLAY_SOUND_WARNING = "play-sound:warning"
-const PLAY_SOUND_SUCCESS = "play-sound:success"
-
 var upgrader = websocket.Upgrader{
 	CheckOrigin: func(r *http.Request) bool {
 		return true // Accepting all requests
@@ -101,7 +98,7 @@ func cameraWebsocketHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		if userId <= 0 {
 			log.Println("Can't classify")
-			err = c.WriteMessage(mt, []byte(PLAY_SOUND_WARNING))
+			err = c.WriteMessage(mt, []byte(warningMessage("cant classify")))
 			if err != nil {
 				log.Println("send failed ", err)
 				continue
@@ -121,7 +118,7 @@ func cameraWebsocketHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		if !can {
 			if time.Now().Add(-5 * time.Second).After(latestAttendanceLog.CreatedAt) {
-				err = c.WriteMessage(mt, []byte(PLAY_SOUND_WARNING))
+				err = c.WriteMessage(mt, []byte(warningMessage("already logged")))
 				if err != nil {
 					log.Println("send failed ", err)
 					continue
@@ -136,7 +133,7 @@ func cameraWebsocketHandler(w http.ResponseWriter, r *http.Request) {
 			continue
 		}
 
-		err = c.WriteMessage(mt, []byte(PLAY_SOUND_SUCCESS))
+		err = c.WriteMessage(mt, []byte(successMessage("salam "+user.Name)))
 		if err != nil {
 			log.Println("send failed ", err)
 			continue
@@ -199,4 +196,12 @@ func streamHandler(w http.ResponseWriter, r *http.Request) {
 
 		time.Sleep(500 * time.Millisecond)
 	}
+}
+
+func successMessage(msg string) string {
+	return "success-message:" + msg
+}
+
+func warningMessage(msg string) string {
+	return "warning-message:" + msg
 }
