@@ -9,10 +9,10 @@ import (
 	"github.com/amirhossein5/efl/server/internal/models"
 )
 
-var rec *face.Recognizer = nil
+var Rec *face.Recognizer = nil
 
 func RecognizeUser(buf []byte) (int, error) {
-	currentFace, err := rec.RecognizeSingle([]byte(buf))
+	currentFace, err := Rec.RecognizeSingle([]byte(buf))
 	if err != nil {
 		return -1, fmt.Errorf("failed to recognize given buffer: %v", err)
 	}
@@ -20,15 +20,15 @@ func RecognizeUser(buf []byte) (int, error) {
 		return -1, fmt.Errorf("not a single face on the image")
 	}
 
-	return rec.ClassifyThreshold(currentFace.Descriptor, 0.2), nil
+	return Rec.ClassifyThreshold(currentFace.Descriptor, 0.2), nil
 }
 
 func Initialize() (*face.Recognizer, error) {
-	if rec == nil {
+	if Rec == nil {
 		log.Println("initializing face-recognition-models...")
 
 		var err error
-		rec, err = face.NewRecognizer("face-recognition-models")
+		Rec, err = face.NewRecognizer("face-recognition-models")
 		if err != nil {
 			return nil, fmt.Errorf("failed to load recognizer: %v", err)
 		}
@@ -40,7 +40,7 @@ func Initialize() (*face.Recognizer, error) {
 		var userIds []int32
 
 		for _, enrolledFace := range enrolledFaces {
-			rface, err := rec.RecognizeSingleFile(enrolledFace.Path)
+			rface, err := Rec.RecognizeSingleFile(enrolledFace.Path)
 			if err != nil {
 				log.Printf("Can't recognize: %v, enrolled face: %v\n", err, enrolledFace)
 				continue
@@ -50,8 +50,8 @@ func Initialize() (*face.Recognizer, error) {
 			userIds = append(userIds, int32(enrolledFace.UserID))
 		}
 
-		rec.SetSamples(samples, userIds)
+		Rec.SetSamples(samples, userIds)
 	}
 
-	return rec, nil
+	return Rec, nil
 }

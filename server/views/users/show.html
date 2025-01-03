@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>کاربر {{ .Name }}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+
+    <style>
+        *, *::before, *::after {
+            direction: rtl;
+            text-align: right;
+            font-family: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        footer {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container my-5">
+        <h1>اطلاعات کاربر</h1>
+        <ul>
+            <li>نام: {{ .Name }}</li>
+            <li>
+                <p>تصاویر:</p>
+
+                <div class="row">
+                    {{ range .EnrolledFaces }}
+                        <form class="col-md-4" action="/enrolled-faces/{{ .ID }}">
+                            <input type="hidden" name="_method" value="delete">
+                            <img src="{{ .Path }}" alt="">
+                            <button type="submit" class="btn btn-delete">حذف</button>
+                        </form>
+                    {{ end }}
+                </div>
+
+                <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#enroll_face_modal">شروع به ثبت تصویر</button>
+            </li>
+        </ul>
+    </div>
+
+    <footer class="mt-5 py-5 border-t d-flex justify-content-center align-items-center gap-4">
+        <a href="/stream">دوربین</a>
+        <a href="/users/create">افزودن کاربر</a>
+    </footer>
+
+    <div class="modal fade" id="enroll_face_modal" tabindex="-1" role="dialog" aria-labelledby="enroll_face_modal_label" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">تصویربرداری</h5>
+                </div>
+                <div class="modal-body">
+                    <form action="/users/{{ .ID }}/enroll-face" method="post">
+                        <div>
+                            <img src="/stream" style="max-width:100%">
+                        </div>
+                        <button type="submit" class="btn btn-success mt-2 btn-block" style="width:100%">ثبت</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous">
+    </script>
+</body>
+
+</html>
