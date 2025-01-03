@@ -193,7 +193,7 @@ void loop() {
   esp_camera_fb_return(fb);
 
   client.poll();
-  delay(1000);
+  delay(1500);
 }
 
 void onMessageCallback(WebsocketsMessage message) {
